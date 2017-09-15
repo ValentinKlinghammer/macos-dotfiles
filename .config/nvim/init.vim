@@ -37,7 +37,7 @@ Plug 'ternjs/tern_for_vim'
 Plug 'ctrlpvim/ctrlp.vim'
 
 " Syntax plugins
-Plug 'leafgarland/typescript-vim'
+Plug 'ValentinKlinghammer/typescript-vim'
 " Plug 'HerringtonDarkholme/yats.vim'
 Plug 'Quramy/vim-js-pretty-template'
 Plug 'othree/html5.vim'
@@ -45,22 +45,21 @@ Plug 'hail2u/vim-css3-syntax'
 
 " Autocomplete
 Plug 'mhartington/nvim-typescript', { 'do': ':UpdateRemotePlugins' }
-" Plug 'autozimu/LanguageClient-neovim', { 'do': ':UpdateRemotePlugins' }
-" Plug 'Shougo/vimproc.vim', {'do' : 'make'}
-" Plug 'Quramy/tsuquyomi'
 Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 
 " --- Eye candy
 Plug 'vim-airline/vim-airline' | Plug 'vim-airline/vim-airline-themes'
 Plug 'jnurmine/Zenburn'
-Plug 'mhartington/oceanic-next'
 Plug 'trevordmiller/nova-vim'
-Plug 'Drogglbecher/vim-moonscape'
+Plug 'colepeters/spacemacs-theme.vim'
+" Plug 'arcticicestudio/nord-vim'
+Plug 'ValentinKlinghammer/nord-vim'
 
 call plug#end()
 
 " --- Interface ----------------------------------------------------------------
 colorscheme zenburn
+colorscheme nord
 
 " --- Visual
 " Show line numbers
@@ -183,6 +182,12 @@ au filetype typescript nnoremap <buffer> D :TSDoc<cr>
 au filetype typescript nnoremap <buffer> R :TSRename<cr>
 au filetype typescript nnoremap <buffer> I :TSImport<cr>
 au filetype typescript nnoremap <buffer> <leader>d :TSTypeDef<cr>
+
+" Show syntax highlighting group used at cursor
+map <F10> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
+\ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
+\ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
+
 
 " --- Plugin config ------------------------------------------------------------
 " ---- CtrlP
@@ -331,9 +336,4 @@ if has("autocmd")
   autocmd FileType typescript syn clear foldBraces
 
   autocmd BufNewFile,BufRead *.ejs set filetype=html
-  " au filetype javascript LanguageClientStart
-  " au filetype typescript LanguageClientStart
-
-  " Highlighting inside JSDoc
-  "let g:javascript_plugin_jsdoc = 1
 endif
