@@ -1,0 +1,380 @@
+" Configuration file for VIM
+" Author: valentin@quelltextfabrik.de
+" Created: 04.06.2013
+
+" Remove all autocmds, so they are not loaded twice
+if has("autocmd")
+  autocmd!
+endif
+
+set nocompatible " Use Vim and enable all the cool stuff
+scriptencoding utf-8
+set encoding=utf-8
+
+" --- Environment ----------------------------------------------------------
+" Vim should use the XDG Config paths
+set directory=$XDG_CACHE_HOME/vim,~/,/tmp
+set backupdir=$XDG_CACHE_HOME/vim,~/,/tmp
+set viminfo+=n$XDG_CACHE_HOME/vim/viminfo
+set runtimepath=$XDG_CONFIG_HOME/vim,$XDG_CONFIG_HOME/vim/after,$VIM,$VIMRUNTIME
+let $MYVIMRC="$XDG_CONFIG_HOME/vim/vimrc"
+
+" --- Options  ---------------------------------------------------------------
+" --- System
+set lazyredraw  " Don't redraw when don't have to
+set ttyfast     " Using a terminal emulator
+set autoread    " Reload file in VIM if changed outside and not changed in VIM
+set visualbell  " No sounds
+
+"set timeoutlen=0       " Time to wait after ESC (default causes an annoying delay)
+"set clipboard+=unnamed " Yanks go on clipboard instead.
+
+" --- Tab and whitespace options
+set autoindent                    " Use indent from previous line
+set smartindent
+set smarttab                      " TODO find out what that setting does
+set tabstop=2                     " Default tab stops
+set shiftwidth=2                  " Default auto indent
+set softtabstop=2
+set expandtab                     " Use spaces instead of tabs
+
+set backspace=indent,eol,start    " If backspace was any smarter it'd send a terminator back in time
+
+" --- Display options
+set showcmd                               " Display incomplete commands
+set number                                " Display line numbers
+set cursorline                            " Highlight current line
+set cul cuc                               " Cursor crosshair
+
+set nowrap                                " Soft wrapping, without changing text
+set linebreak                             " Only break on characters in 'breakat'
+if has('multi_byte')                      " Use fancy symbols to indicate linebreak
+  let &showbreak = '↳ '
+else
+  let &showbreak = '> '
+endif
+
+set showmatch                             " Show matching bracket
+set matchpairs=(:),[:],{:}                " Expected pairs
+
+set laststatus=2                          " Always show status line
+set cmdheight=2                           " Command line two lines high
+set scrolloff=5                           " Keep at least 5 lines above/below
+set sidescrolloff=5                       " Keep at least 5 lines left/right
+
+set splitright                            " Split right instead of left
+set splitbelow                            " Split below
+
+set list listchars=tab:»·,trail:·,nbsp:+  " Show the leading whitespaces"
+set display+=uhex                         " Show unprintables as <xx>
+set display+=lastline                     " Show as much as possible of the last line
+
+" --- Search options
+set ignorecase    " Ignore case when searching
+set smartcase     " Except when uppercase is used
+set incsearch     " Show matches live while typing
+set hlsearch      " Highlight all search matches, turn off with :noh
+
+" --- Auto complete options
+set wildmode=list:longest,full  " TODO document the awesomeness of this
+set wildmenu
+set wildignore+=*.o,*.obj,*.pyc,*.pyo,*.pyd,*.class,*.lock
+set wildignore+=*.png,*.gif,*.jpg,*.ico
+set wildignore+=',.svn,.hg
+set wildignore+=*sass-cache*
+set wildignore+=*DS_Store*
+set wildignore+=vendor/rails/**
+set wildignore+=vendor/cache/**
+set wildignore+=*.gem
+
+" --- Buffer and backup options
+set hidden                " Hide buffer instead of unloading when abandoning it
+set history=1000          " Keep more history of : commands
+set undolevels=1000       " 1000 undos
+set updatecount=100       " Switch swap file every 160 chars
+
+" Create a tmp folder in the home directory for swap, backup and undo files
+if isdirectory($HOME . '/tmp') == 0
+  :silent !mkdir -p ~/tmp > /dev/null 2>&1
+endif
+
+set backupdir=~/tmp//
+set backup
+set directory=~/tmp//
+set noswapfile
+" set swapfile
+if exists("+undofile")
+  set undodir=~/tmp//
+  set undofile
+endif
+
+" --- Vundler ----------------------------------------------------------------
+" This section should setup VIM with very little interaction, vundle and
+" the specified Bundles are installed autmatically
+
+" --- Function to install bundles automagically
+function! LoadBundles()
+  if filereadable(expand("$XDG_CONFIG_HOME/vim/bundles"))
+    source $XDG_CONFIG_HOME/vim/bundles
+  endif
+endfunction
+
+" --- Install Vundle and bundles if possible
+filetype off                            " required!
+if executable("git")
+  if !isdirectory(expand("$XDG_CONFIG_HOME/vim/bundle/vundle"))
+    echomsg "***************************"
+    echomsg "Installing Vundle"
+    echomsg "***************************"
+    !mkdir -p $XDG_CONFIG_HOME/vim/bundle && git clone git://github.com/gmarik/vundle.git $XDG_CONFIG_HOME/vim/bundle/vundle
+    let s:bootstrap=1
+  endif
+
+  set rtp+=~/.config/vim/bundle/vundle/
+  call vundle#begin('$XDG_CONFIG_HOME/vim/bundle')
+  call LoadBundles()
+  call vundle#end()
+
+  if exists("s:bootstrap") && s:bootstrap
+    unlet s:bootstrap
+    PluginInstall
+    quit
+  endif
+endif
+
+syntax on
+filetype plugin indent on               " required!
+
+" --- Plugin key mappings ----------------------------------------------------
+" --- CtrlP
+let g:ctrlp_map = '<c-p>'
+let g:ctrlp_cmd = 'CtrlP'
+let g:ctrlp_custom_ignore = {
+    \ 'dir': '\v[\/](\.git|\.hg|\.svn|node_modules|CVS|tmp|Library|Applications|dist|build|docs|Music|[^\/]*-store)$',
+    \ 'file': '\v\.(exe|so|dll)$',
+    \
+    \ }
+
+let g:ctrlp_by_filename = 1 " 0 - Search by full path, not just filename
+let g:ctrlp_switch_buffer = 0
+if executable('ag')
+  " Note we extract the column as well as the file and line number
+  set grepprg=ag\ --nogroup\ --nocolor\ --column
+  set grepformat=%f:%l:%c%m
+  let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+  let g:ctrlp_use_caching = 0
+  "let g:ctrlp_user_command = 'ag  --ignore tags --ignore /cache/ %s -l --nocolor -g ""'
+else
+  let g:ctrlp_user_command = {
+        \ 'types' : {
+        \ 1: ['.git', 'cd %s && git ls-files . --cached --exclude-standard --others'],
+        \ 2: ['.hg', 'hg --cwd %s locate -I .'],
+        \
+        \ }
+        \ }
+endif
+
+" If CtrlP installed, map that
+nmap ; :CtrlPBuffer<CR>
+
+" --- Nerd tree
+" Toggle nerd tree
+map <F2> :NERDTreeToggle<CR>
+
+" --- Lightline
+let g:lightline = {
+      \ 'colorscheme': 'wombat',
+      \ 'active': {
+      \   'left': [ [ 'mode', 'paste' ],
+      \             [ 'fugitive', 'readonly', 'filename', 'modified' ] ]
+      \ },
+      \ 'component_function': {
+      \   'fugitive': 'MyFugitive',
+      \   'readonly': 'MyReadonly',
+      \   'filename': 'MyFilename',
+      \ },
+      \ 'separator': { 'left': '', 'right': ''  },
+      \ 'subseparator': { 'left': '', 'right': ''  }
+      \ }
+
+function! MyReadonly()
+  if &filetype == "help"
+    return ""
+  elseif &readonly
+    return "⭤ "
+  else
+    return ""
+  endif
+endfunction
+
+function! MyFugitive()
+  if exists("*fugitive#head")
+    let _ = fugitive#head()
+    return strlen(_) ? '⭠ '._ : ''
+  endif
+  return ''
+endfunction
+
+function! MyFilename()
+  return ('' != MyReadonly() ? MyReadonly() . ' ' : '') .
+        \ ('' != expand('%') ? expand('%') : '[NoName]')
+endfunction
+
+set noshowmode
+
+" --- UltiSnips
+" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
+" let g:UltiSnipsExpandTrigger='<tab>'
+" let g:UltiSnipsJumpForwardTrigger='<tab>'
+" let g:UltiSnipsJumpBackwardTrigger='<s-tab>'
+
+" If you want :UltiSnipsEdit to split your window.
+"let g:UltiSnipsEditSplit='vertical'
+
+" YouCompleteMe
+"let g:ycm_key_list_previous_completion=['<Up>']
+let g:ycm_semantic_triggers =  {
+            \   'c' : ['->', '.'],
+            \   'objc' : ['->', '.'],
+            \   'ocaml' : ['.', '#'],
+            \   'cpp,objcpp' : ['->', '.', '::'],
+            \   'perl' : ['->'],
+            \   'php' : ['->', '::', '"', "'", 'use ', 'namespace ', '\'],
+            \   'cs,java,javascript,typescript,d,python,perl6,scala,vb,elixir,go' : ['.'],
+            \   'html': ['<', '"', '</', ' '],
+            \   'vim' : ['re![_a-za-z]+[_\w]*\.'],
+            \   'ruby' : ['.', '::'],
+            \   'lua' : ['.', ':'],
+            \   'erlang' : [':'],
+            \   'haskell' : ['.', 're!.']
+            \ }
+let g:ycm_collect_identifiers_from_tags_files = 1
+let g:ycm_seed_identifiers_with_syntax = 1
+
+" Ultisnips
+"let g:UltiSnipsExpandTrigger="<c-j>"
+"let g:UltiSnipsListSnippets="<c-s-tab>"
+
+"let g:UltiSnipsSnippetsDir = expand("$XDG_CONFIG_HOME/vim/bundle/ultisnips")
+let g:UltiSnipsSnippetDirectories = ["UltiSnips", "ultisnips"]
+
+"--- Split thingy
+" TODO Leader does not work here but using "," directly does, why?
+nmap ,j :SplitjoinJoin<cr>
+nmap ,s :SplitjoinSplit<cr>
+
+" --- Undo tree
+nmap <Leader>u :GundoToggle<CR>
+" open on the right so as not to compete with the nerdtree
+let g:gundo_right = 1
+" a little wider for wider screens
+let g:gundo_width = 60
+
+" --- Tags
+nmap <F8> :TagbarToggle<CR>
+let g:tagbar_type_typescript = {
+  \ 'ctagstype': 'typescript',
+  \ 'kinds': [
+    \ 'c:classes',
+    \ 'n:modules',
+    \ 'f:functions',
+    \ 'v:variables',
+    \ 'v:varlambdas',
+    \ 'm:members',
+    \ 'i:interfaces',
+    \ 'e:enums',
+  \ ]
+\ }
+
+
+" --- Eyecandy ---------------------------------------------------------------
+" --- Color and color scheme
+set t_Co=256                  " Enable 256 colors
+set background=dark           " Prefer dark background
+colorscheme zenburn
+
+if has('gui_running')
+  set guifont=UbuntuMono-R-Powerline 12
+endif
+
+" --- Helpers ----------------------------------------------------------------
+" --- Always jump to last known position if valid
+if has ("autocmd")
+  autocmd BufReadPost *
+        \ if line("'\"") > 0 && line("'\"") <= line("$") |
+        \   exe "normal! g`\"" |
+        \ endif
+endif
+
+" --- Strip trailing whitespace
+function! StripTrailingWhite()
+  let l:winview = winsaveview()
+  silent! %s/\s\+$//
+  call winrestview(l:winview)
+endfunction
+if has("autocmd")
+  autocmd BufWritePre *  call StripTrailingWhite()
+endif
+
+" --- Map keys
+nnoremap <silent> <tab> :wincmd l<CR>
+nnoremap <silent> <S-tab> :wincmd h<CR>
+
+" ---- Syntastic
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+
+" --- Syntax specific settings -----------------------------------------------
+" --- Ruby
+if has("autocmd")
+  autocmd FileType ruby,eruby setlocal cinwords=do
+  autocmd FileType ruby,eruby let g:rubycomplete_buffer_loading=1
+  autocmd FileType ruby,eruby let g:rubycomplete_rails = 1
+  autocmd FileType ruby,eruby let g:rubycomplete_classes_in_global=1
+endif
+
+" --- JavaScript/Typescript
+if has("autocmd")
+  " Enable ES2016 Template String HTML highlighting
+  " FIXME This is deactivated because it sometimes breaks with JS in html
+  " autocmd FileType javascript JsPreTmpl html
+  " autocmd FileType typescript JsPreTmpl html
+  autocmd BufNewFile,BufRead *.ejs set filetype=html
+
+  " Highlighting inside JSDoc
+  "let g:javascript_plugin_jsdoc = 1
+endif
+
+" --- Key mapping ----------------------------------------------------------
+" Remap leader to the easier reachable ,
+let mapleader=","
+
+" Paste from system clipboard
+nmap <Leader>p "+p
+nmap <Leader>y "+yy
+
+" Clear search highlighting
+nmap <Leader>q :nohlsearch<CR>
+
+" Switch buffer more easily
+nmap <C-e> :b#<CR>
+nmap <C-l> :bnext<CR>
+nmap <C-h> :bprev<CR>
+
+" Jump to current file in Nerdtree
+nmap <leader>N :NERDTreeFind<cr>
+
+" Search for word under cursor in CWD
+nnoremap <Leader>s :exec "Ag!  -f ".expand("<cword>")<cr>
+
+set completeopt-=preview
+
+" --- Finish up --------------------------------------------------------------
+set secure
+" EOF

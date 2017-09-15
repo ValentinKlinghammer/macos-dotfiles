@@ -1,0 +1,125 @@
+" vi:syntax=vim
+
+" --- let Vundle manage Vundle
+Plugin 'gmarik/vundle'
+
+" --- Visual star search
+Plugin 'nelstrom/vim-visual-star-search'
+
+" --- CtrlP plugin for fuzzy file finding
+Plugin 'kien/ctrlp.vim'
+
+" --- Tags
+"Plugin 'xolox/vim-misc'
+"Plugin 'xolox/vim-easytags'
+Plugin 'majutsushi/tagbar'
+Plugin 'craigemery/vim-autotag'
+
+" --- File tree view
+Plugin 'scrooloose/nerdtree'
+
+" --- Syntax checker
+"Plugin 'scrooloose/syntastic'
+
+" --- Fast autocompletion
+Plugin 'Valloric/YouCompleteMe'
+" FIXME The check doesn't work anymore
+"if !filereadable(expand('~/.config/vim/bundle/YouCompleteMe/python/ycm_core.so'))
+" call system('cd ~/.config/vim/bundle/YouCompleteMe && git submodule --init --recursive"')
+" call system('cd ~/.config/vim/bundle/YouCompleteMe && ./install.py"')
+"endif
+" TODO Typescript autocomplete: https://github.com/Quramy/tsuquyomi
+
+" --- Tern based JS editing support
+Plugin 'ternjs/tern_for_vim'
+
+" --- Vim Lightline for a nicer status bar
+Plugin 'itchyny/lightline.vim'
+
+" Git wrapper, just used for status bar
+Plugin 'tpope/vim-fugitive'
+
+" Show git changes
+Plugin 'airblade/vim-gitgutter'
+
+" --- Changes surrounding brackets or quotes
+Plugin 'tpope/vim-surround'
+
+" --- Make repeat possible for plugin actions, e.g. vim-surround
+Plugin 'tpope/vim-repeat'
+
+" ---
+Plugin 'sukima/xmledit'
+
+" Display Undo Tree
+Plugin 'sjl/gundo.vim'
+
+" --- Detect indentation from current file or similiar files
+Plugin 'tpope/vim-sleuth'
+
+" --- Detect and use .editorconfig if present
+Plugin 'editorconfig/editorconfig-vim'
+
+" --- Smart pairing of brackets with CR and SPACE awareness
+Plugin 'jiangmiao/auto-pairs'
+
+"--- Snippet
+"Plugin 'SirVer/ultisnips'
+"Plugin 'honza/vim-snippets'
+
+"-- Split and join statements
+Plugin 'AndrewRadev/splitjoin.vim'
+
+" --- Toggle comments
+Plugin 'tomtom/tcomment_vim'
+
+" --- Some language specific plugins
+" --- Ruby
+" Ends e.g. ruby blocks automatically
+" Jump with % from keyword to corresponding end
+" Plugin 'vim-scripts/ruby-matchit'
+" Plugin 'vim-ruby/vim-ruby'
+" Plugin 'tpope/vim-rails'
+" Plugin 'tpope/vim-endwise'
+
+" --- Frontend stuff
+" Plugin 'wavded/vim-stylus'
+" Plugin 'digitaltoad/vim-jade'
+" Plugin 'tpope/vim-haml'
+" Plugin 'mustache/vim-mustache-handlebars'
+" Zen coding, defaults to <C-y>,
+Plugin 'mattn/emmet-vim'
+Plugin 'vim-scripts/closetag.vim'
+Plugin 'edsono/vim-matchit'
+Plugin 'lumiliet/vim-twig'
+
+" --- JavaScript
+" Plugin 'pangloss/vim-javascript'
+Plugin 'leafgarland/typescript-vim'
+Plugin 'HerringtonDarkholme/yats.vim'
+Plugin 'jelera/vim-javascript-syntax'
+Plugin 'jason0x43/vim-js-indent'
+Plugin 'Quramy/vim-js-pretty-template'
+
+" --- Haskell
+" Plugin 'vim-scripts/haskell.vim'
+
+" --- Additional functions
+" Turn .todo and .TODO files into todo lists
+" Plugin 'Gorgoroth/NotSoPlainTasks'
+
+" --- Themes
+" Plugin 'Gorgoroth/vim-quelltextfabrik-theme'
+" Plugin 'dsolstad/vim-wombat256i'
+Plugin 'ajh17/Spacegray.vim'
+Plugin 'jnurmine/Zenburn'
+
+" --- Code Minimap
+" Meh, didn't like it
+"Plugin 'severin-lemaignan/vim-minimap'
+
+" -- Better than ack
+Plugin 'rking/ag.vim'
+
+" --- Time Tracking
+Plugin 'wakatime/vim-wakatime'
